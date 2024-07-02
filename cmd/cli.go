@@ -7,14 +7,17 @@ import (
 
 func main() {
 	item1 := model.NewItem("Bread", 200, 70)
+	item2 := model.NewItem("Milk", 900, 80)
 	cart := model.NewCart()
 
 	cart.AddItem(item1)
 	cart.AddItem(item1)
-	cart.AddItem(item1)
-	for key, val := range cart.Items {
-		fmt.Println("Key", key, "Val", val)
-	}
+	cart.AddItem(item2)
+
 	cart.RemoveItem(item1)
+	cart.RemoveItem(item2)
+	for _, item := range cart.Items {
+		fmt.Println("item:", item)
+	}
 
 }

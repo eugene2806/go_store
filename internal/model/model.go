@@ -1,69 +1,84 @@
 package model
 
 type Item struct {
-	name     string
-	weight   int
-	priceRUB int
+	name      string
+	weight    int
+	priceRUB  int
+	totalItem TotalItem
 }
 
 type Cart struct {
-	Items map[string]CardItem
+	Items []Item
 }
 
-type CardItem struct {
-	item      *Item
+type TotalItem struct {
 	weightSum int
 	priceSum  int
 	countItem int
 }
 
 func NewItem(productName string, newWeight, newPriceRUB int) *Item {
-	return &Item{name: productName, weight: newWeight, priceRUB: newPriceRUB}
-}
-
-func NewCartItem(item *Item) *CardItem {
-	return &CardItem{
-		item:      item,
-		weightSum: item.weight,
-		priceSum:  item.priceRUB,
-		countItem: 1,
+	return &Item{
+		name:     productName,
+		weight:   newWeight,
+		priceRUB: newPriceRUB,
+		totalItem: TotalItem{
+			weightSum: newWeight,
+			priceSum:  newPriceRUB,
+			countItem: 1,
+		},
 	}
 }
 
 func NewCart() *Cart {
-	return &Cart{Items: make(map[string]CardItem)}
+	return &Cart{Items: make([]Item, 0, 10)}
 }
 
 func (c *Cart) AddItem(item *Item) {
-	nameItem, ok := c.Items[item.name]
+	for index, i := range c.Items {
+		if i.name == item.name {
 
-	if !ok {
-		c.Items[item.name] = *NewCartItem(item)
+			newItem := Item{
+				name:     i.name,
+				weight:   i.weight,
+				priceRUB: i.priceRUB,
+				totalItem: TotalItem{
+					weightSum: i.totalItem.weightSum + i.weight,
+					priceSum:  i.totalItem.priceSum + i.priceRUB,
+					countItem: i.totalItem.countItem + 1,
+				},
+			}
 
-		return
+			c.Items[index] = newItem
+
+			return
+		}
 	}
 
-	nameItem.countItem++
-	nameItem.priceSum += nameItem.item.priceRUB
-	nameItem.weightSum += nameItem.item.weight
-	c.Items[item.name] = nameItem
+	c.Items = append(c.Items, *item)
 }
 
 func (c *Cart) RemoveItem(item *Item) {
-	nameItem, ok := c.Items[item.name]
+	for index, i := range c.Items {
+		if i.name == item.name {
+			if i.totalItem.countItem > 1 {
+				newItem := Item{
+					name:     i.name,
+					weight:   i.weight,
+					priceRUB: i.priceRUB,
+					totalItem: TotalItem{
+						weightSum: i.totalItem.weightSum - i.weight,
+						priceSum:  i.totalItem.priceSum - i.priceRUB,
+						countItem: i.totalItem.countItem - 1,
+					},
+				}
+				c.Items[index] = newItem
 
-	if !ok {
+				return
+			}
+			c.Items = append(c.Items[:index], c.Items[index+1:]...)
+			return
 
-		return
+		}
 	}
-
-	if c.Items[item.name].countItem > 1 {
-		nameItem.countItem--
-		nameItem.weightSum -= nameItem.item.weight
-		nameItem.priceSum -= nameItem.item.priceRUB
-		c.Items[item.name] = nameItem
-		return
-	}
-
-	delete(c.Items, item.name)
 }

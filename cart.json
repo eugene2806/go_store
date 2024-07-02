@@ -1,0 +1,24 @@
+{
+  "Items": {
+    "Bread": {
+      "item": {
+        "name": "Bread",
+        "weight": 300,
+        "price": 150
+      },
+      "weightSum": 300,
+      "priceSum": 150,
+      "countItem": 1
+    },
+    "Apple": {
+      "item": {
+        "name": "Apple",
+        "weight": 200,
+        "price": 100
+      },
+      "weightSum": 200,
+      "priceSum": 100,
+      "countItem": 1
+    }
+  }
+}

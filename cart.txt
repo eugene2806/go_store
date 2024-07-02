@@ -1,0 +1,28 @@
+type Item struct {	name     string	weight   int	priceRUB int}
+type Cart struct {	Items map[string]CardItem}
+type CardItem struct {	item      *Item	weightSum int	priceSum  int	countItem int}
+
+Cart{
+    Items: map[string]CardItem{
+    "Apple": {
+        item: {
+        name: "Apple",
+        weight: 200,
+        price: 100,
+    }
+        weightSum: 200,
+        priceSum: 100,
+        countItem: 1,
+    },
+    "Bread": {
+        item: {
+        name: "Bread",
+        weight: 300,
+        price: 150,
+        }
+        weightSum: 300,
+        priceSum: 150,
+        countItem: 1,
+        },
+    }
+}
