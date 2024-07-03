@@ -16,6 +16,7 @@ func main() {
 
 	cart.RemoveItem(item1)
 	cart.RemoveItem(item2)
+	cart.RemoveItem(item1)
 	for _, item := range cart.Items {
 		fmt.Println("item:", item)
 	}
