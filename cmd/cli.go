@@ -4,21 +4,23 @@ import (
 	"github.com/gorilla/mux"
 	"log"
 	"net/http"
-	"store/internal/utils"
+	"store/internal/builder"
 )
 
-const apiPrefix string = "/api"
+const apiPrefix string = "/api/store"
 
 var (
-	port          string = "8080"
-	storeDBPrefix        = apiPrefix + "/storeDB"
+	port              = "8080"
+	storeDBPrefix     = apiPrefix + "/items"
+	storeBasketPrefix = apiPrefix + "/items/basket"
 )
 
 func main() {
 	log.Println("Start store server")
 	router := mux.NewRouter()
 
-	utils.BuildStoreDB(router, storeDBPrefix)
+	builder.BuildStoreDB(router, storeDBPrefix)
+	builder.BuildBasket(router, storeBasketPrefix)
 
 	log.Println("Router configured successfully")
 

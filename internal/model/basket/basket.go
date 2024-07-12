@@ -1,50 +1,50 @@
 package basket
 
-import "github.com/google/uuid"
+import (
+	"github.com/google/uuid"
+	"log"
+	"store/internal/model/items"
+)
 
 type Basket struct {
-	Items []*Item
+	Items []*ItemBasket
 }
 
-type Item struct {
-	ID        uuid.UUID `json:"id"`
-	Name      string    `json:"name"`
-	Weight    int       `json:"weight"`
-	PriceRUB  int       `json:"price_rub"`
-	TotalItem TotalItem
+type ItemBasket struct {
+	ID            uuid.UUID `json:"id"`
+	Name          string    `json:"name"`
+	TotalWeight   int       `json:"total_weight"`
+	TotalPriceRUB int       `json:"total_price_rub"`
+	CountItem     int       `json:"count_item"`
 }
 
-type TotalItem struct {
-	WeightSum int `json:"weight_sum"`
-	PriceSum  int `json:"price_sum"`
-	CountItem int `json:"count_item"`
-}
-
-func NewItem(productName string, newWeight, newPriceRUB int) *Item {
-	return &Item{
-		ID:       uuid.New(),
-		Name:     productName,
-		Weight:   newWeight,
-		PriceRUB: newPriceRUB,
-		TotalItem: TotalItem{
-			PriceSum:  newPriceRUB,
-			WeightSum: newWeight,
-			CountItem: 1,
-		},
+func NewItemBasket(newID uuid.UUID, productName string, newWeight, newPriceRUB int) *ItemBasket {
+	return &ItemBasket{
+		ID:            newID,
+		Name:          productName,
+		TotalWeight:   newWeight,
+		TotalPriceRUB: newPriceRUB,
+		CountItem:     1,
 	}
 }
 
 func NewCart() *Basket {
-	return &Basket{Items: make([]*Item, 0, 10)}
+	return &Basket{Items: make([]*ItemBasket, 0, 10)}
 }
 
-func (c *Basket) AddItem(item *Item) {
-	for _, i := range c.Items {
-		if i.Name == item.Name {
+func (c *Basket) AddItem(item *ItemBasket) {
+	for index, i := range c.Items {
+		if i.ID == item.ID {
 
-			i.TotalItem.WeightSum += item.Weight
-			i.TotalItem.PriceSum += item.PriceRUB
-			i.TotalItem.CountItem++
+			product, ok := items.FindItemDBByID(item.ID)
+			if !ok {
+				log.Println("Incorrect ID")
+
+				return
+			}
+			c.Items[index].CountItem++
+			c.Items[index].TotalWeight += product.Weight
+			c.Items[index].TotalPriceRUB += product.PriceRUB
 
 			return
 		}
@@ -53,21 +53,33 @@ func (c *Basket) AddItem(item *Item) {
 	c.Items = append(c.Items, item)
 }
 
-func (c *Basket) RemoveItem(item *Item) {
+func (c *Basket) RemoveItem(item *ItemBasket) {
 	for index, i := range c.Items {
-		if i.Name == item.Name {
+		if i.ID == item.ID {
 
-			if i.TotalItem.CountItem > 1 {
-				i.TotalItem.WeightSum -= item.Weight
-				i.TotalItem.PriceSum -= item.PriceRUB
-				i.TotalItem.CountItem--
+			product, ok := items.FindItemDBByID(item.ID)
+			if !ok {
+				log.Println("Incorrect ID")
+
+				return
+			}
+
+			if c.Items[index].CountItem > 1 {
+
+				c.Items[index].CountItem--
+				c.Items[index].TotalWeight -= product.Weight
+				c.Items[index].TotalPriceRUB -= product.PriceRUB
 
 				return
 			}
 
 			c.Items = append(c.Items[:index], c.Items[index+1:]...)
-
-			return
 		}
 	}
+}
+
+var NewBasket *Basket
+
+func init() {
+	NewBasket = NewCart()
 }
