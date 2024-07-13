@@ -33,8 +33,6 @@ func FindItemDBByID(id uuid.UUID) (*ItemDB, bool) {
 		return &item, find
 	}
 
-	find = false
-
 	return nil, find
 }
 

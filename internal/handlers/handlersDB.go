@@ -5,6 +5,7 @@ import (
 	"log"
 	"net/http"
 	"store/internal/model/items"
+	"store/internal/service"
 )
 
 func initHeaders(writer http.ResponseWriter) {
@@ -31,18 +32,15 @@ func AddItemDB(writer http.ResponseWriter, request *http.Request) {
 	err := json.NewDecoder(request.Body).Decode(&item)
 
 	if err != nil {
-		msg := Message{Message: "Provided JSON file is invalid"}
+		msg := Message{Message: "Provided JSON is invalid"}
 		writer.WriteHeader(400)
 		json.NewEncoder(writer).Encode(msg)
 
 		return
 	}
 
-	for index, i := range item {
-		product := items.NewItemDB(i.Name, i.Weight, i.PriceRUB, i.InStock)
-		item[index].ID = product.ID
-		items.DB[product.ID] = *product
-	}
+	itemsService := service.ItemsService{}
+	itemsService.AddItemToDB(item)
 
 	writer.WriteHeader(201)
 

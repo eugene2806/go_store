@@ -7,6 +7,7 @@ import (
 	"net/http"
 	"store/internal/model/basket"
 	"store/internal/model/items"
+	"store/internal/service"
 )
 
 func GetAllItemsBasket(writer http.ResponseWriter, request *http.Request) {
@@ -29,7 +30,7 @@ func AddItemBasket(writer http.ResponseWriter, request *http.Request) {
 	err := json.NewDecoder(request.Body).Decode(&itemInput)
 
 	if err != nil {
-		msg := Message{Message: "Provided JSON file is invalid"}
+		msg := Message{Message: "Provided JSON is invalid"}
 		writer.WriteHeader(400)
 		json.NewEncoder(writer).Encode(msg)
 	}
@@ -44,9 +45,8 @@ func AddItemBasket(writer http.ResponseWriter, request *http.Request) {
 		return
 	}
 
-	item := basket.NewItemBasket(product.ID, product.Name, product.Weight, product.PriceRUB)
-
-	basket.NewBasket.AddItem(item)
+	basketService := service.BasketService{}
+	item := basketService.AddItemToBasket(product)
 
 	writer.WriteHeader(201)
 
