@@ -2,7 +2,7 @@ package builder
 
 import (
 	"github.com/gorilla/mux"
-	"store/internal/model/handlers"
+	"store/internal/handlers"
 )
 
 func BuildStoreDB(router *mux.Router, prefix string) {
